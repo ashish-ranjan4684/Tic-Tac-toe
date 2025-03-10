@@ -1,0 +1,141 @@
+Toggling a class in JavaScript allows you to dynamically add or remove a CSS class from an HTML element. This is useful for changing the appearance or behavior of an element in response to user actions.
+
+Using classList.toggle()
+
+The classList.toggle() method adds a specified class to an element if it’s not present, and removes it if it is.
+
+Example:
+
+function toggleClass() {
+var element = document.getElementById("myDIV");
+element.classList.toggle("mystyle");
+}
+
+
+
+element.getAttribute("attribute_name") -> gives the value of the specified attribute;
+
+
+
+How To Insert Emojis In Visual Studio Code (VS Code)
+    On Windows:
+        1. Place your cursor where you want to insert the emoji.
+        2. Press Win + . (Windows key and the period key) or Win + ; (Windows key and the semicolon key).
+        3. The emoji picker will appear. You can browse or search for the emoji you want to use.
+        4. Click on the emoji to insert it into your code.
+
+HTML is designed with extensibility in mind for data that should be associated with a particular element but need not have any defined meaning. data-* attributes allow us to store extra information on standard, semantic HTML elements without other hacks such as non-standard attributes, or extra properties on DOM.
+
+HTML syntax
+The syntax is simple. Any attribute on any element whose attribute name starts with data- is a data attribute. Say you have some articles and you want to store some extra information that doesn't have any visual representation. Just use data attributes for that:
+
+html
+Copy to Clipboard
+<main>
+  <article
+    id="electric-cars"
+    data-columns="3"
+    data-index-number="12314"
+    data-parent="cars">
+    <!-- Electric car content -->
+  </article>
+
+  <article
+    id="solar-cars"
+    data-columns="3"
+    data-index-number="12315"
+    data-parent="cars">
+    <!-- Solar car content -->
+  </article>
+
+  <article
+    id="flying-cars"
+    data-columns="4"
+    data-index-number="12316"
+    data-parent="cars">
+    <!-- Flying car content -->
+  </article>
+</main>
+JavaScript access
+Reading the values of these attributes out in JavaScript is also very simple. You could use getAttribute() with their full HTML name to read them, but the standard defines a simpler way: a DOMStringMap you can read out via a dataset property.
+
+To get a data attribute through the dataset object, get the property by the part of the attribute name after data- (note that dashes are converted to camel case).
+
+js
+Copy to Clipboard
+const article = document.querySelector("#electric-cars");
+// The following would also work:
+// const article = document.getElementById("electric-cars")
+
+article.dataset.columns; // "3"
+article.dataset.indexNumber; // "12314"
+article.dataset.parent; // "cars"
+Each property is a string and can be read and written. In the above case setting article.dataset.columns = 5 would change that attribute to "5".
+
+You can also use document.querySelector() or document.querySelectorAll() with data attribute selectors to find one element or all elements that match:
+
+js
+Copy to Clipboard
+// Find all elements with a data-columns attribute
+const articles = document.querySelectorAll("[data-columns]");
+
+// Find all elements with data-columns="3"
+const threeColumnArticles = document.querySelectorAll('[data-columns="3"]');
+// You can then iterate over the results
+threeColumnArticles.forEach((article) => {
+  console.log(article.dataset.indexNumber);
+});
+CSS access
+Note that, as data attributes are plain HTML attributes, you can even access them from CSS. For example to show the parent data on the article you can use generated content in CSS with the attr() function:
+
+css
+Copy to Clipboard
+article::before {
+  content: attr(data-parent);
+}
+You can also use the attribute selectors in CSS to change styles according to the data:
+
+css
+Copy to Clipboard
+article[data-columns="3"] {
+  width: 400px;
+}
+article[data-columns="4"] {
+  width: 600px;
+}
+You can see all this working together in this JS Bin example.
+
+Data attributes can also be stored to contain information that is constantly changing, like scores in a game. Using the CSS selectors and JavaScript access here this allows you to build some nifty effects without having to write your own display routines. See this screencast for an example using generated content and CSS transitions (JS Bin example).
+
+Data values are strings. Number values must be quoted in the selector for the styling to take effect.
+
+
+
+
+
+I have the above given wjs file and server.js. I am passing the user object in ejs file through my server. and then I am trying to access user.username in javascript. But the browser is showing user is not defined
+ChatGPT said:
+The issue is that your JavaScript code in game.ejs is running in the browser, but user is only defined within the EJS template and not exposed to the client-side JavaScript.
+
+Solution
+You need to pass the user object from EJS to JavaScript explicitly. Modify your game.ejs file as follows:
+
+Fix: Inject user into JavaScript
+html
+Copy
+Edit
+<script>
+    const user = <%- JSON.stringify(user) %>;
+    console.log(user.username);
+</script>
+Why This Works?
+<%- JSON.stringify(user) %> safely embeds the user object into JavaScript.
+Now, user is accessible in the browser-side JavaScript.
+Final Check
+Make sure your server.js correctly passes user when rendering the game.ejs file:
+
+js
+Copy
+Edit
+return res.render("game", { user: db[i] });
+Let me know if you need further debugging! 🚀

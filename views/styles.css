@@ -1,0 +1,102 @@
+/* styles.css */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 5px;
+    background-color: #a91818;
+    padding: 5px;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.cell:hover {
+    background-color: #ddd;
+}
+
+button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+
+.show{
+    display:block;
+}
+
+.hide{
+    display:none;
+}
+
+#name{
+    position:absolute;
+    right:0;
+    top:0;
+}
+
+#listOfFreeUsers{
+    position:absolute;
+    left:0;
+    top:0;
+}
+
+.showRequest{
+    display:flex;
+    flex-direction:column;
+    flex-wrap:wrap;
+    align-items:center;
+    justify-content:center;
+    position:absolute;
+    background-color: rgb(237, 227, 227);
+    padding:10px;
+    border-radius: 30px;
+    min-width:50%;
+    min-height:30%;
+    z-index:100;
+}
+
+.requestButton{
+    border-radius: 30px;
+}
+
+.requestButton:hover{
+    background-color: antiquewhite;
+}
+
+.hideRequest{
+    
+    display:none;
+}

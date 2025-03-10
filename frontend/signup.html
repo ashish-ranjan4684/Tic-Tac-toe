@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-toe</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <style>
+        body{
+            display:flex;
+            flex-flow:row wrap;
+            height:100vh;
+            width:100vw;
+            align-items: center;
+            justify-content:center;
+            background:linear-gradient(rgb(39, 143, 166),rgb(28, 188, 169))
+        }
+        form{
+            display:flex;
+            flex-flow:column wrap;
+            border:2px solid black;
+            min-height:30%;
+            width:50%;
+            max-width:500px;
+            row-gap:10px;
+            align-items:center;
+            justify-content: center;
+            border-radius:10px;
+            background:linear-gradient(orange,red);
+            box-shadow:10px 10px 5px 0px white
+
+
+        }
+        input{
+            display:block;
+            height:30px;
+            width:90%;
+            box-sizing: border-box;
+            border-radius:25px ;
+            padding:5px;
+
+        }
+        label{
+            align-self:flex-start;
+        }
+        button{
+            height:30px;
+            width:50%;
+            border-radius:25px;
+            color:azure;
+            background:linear-gradient(red,black);
+        }
+        button:hover{
+            background:linear-gradient(black,red);
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+    <!--<h2>Sign Up</h2>-->
+    <form action="localhost:5000/signup" method="post">
+        <label for="email">Email: </label>
+        <input type="text" id="email" name="email"/>
+        <label for="username">Username: </label>
+        <input type="text" id="username" name="username"/>
+        <label for="name">Name: </label>
+        <input type="text" id="name" name="name"/>
+        
+        <label for="password">Password: </label>
+        <input type="password" id="password" name="password">
+        <button type="submit">signup</button>
+    </form>
+</body>
+</html>

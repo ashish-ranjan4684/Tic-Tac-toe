@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div id="name">Hello! <%=user.name %>😊</div>
+    <ul id="listOfFreeUsers"></ul>
+    
+    <div id="requestShowerBox" class="showRequest hideRequest">
+        <div id="requestText"></div>
+        <div>
+            <button type="button" id="connect" class="requestButton">Connect</button>
+            <button type="button" id="reject" class="requestButton">Reject</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="grid">
+            <% for(let i = 0; i < 9; i++) { %>
+                <div class="cell" data-index="<%= i %>"></div>
+            <% } %>
+        </div>
+        <button id="reset">Reset Game</button>
+    </div>
+
+    <div id="messageBox" class="hide"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let connectedOpponentSocket;
+        let roomName;
+        let turn = "X";
+        let isMyTurn = false;
+        const user = <%- JSON.stringify(user) %>;
+
+        socket.emit("findFreeUsers", user.username);
+
+        // Show list of free users
+        socket.on("foundFreeUser", (array) => {
+            const userList = document.getElementById("listOfFreeUsers");
+            userList.innerHTML = "";
+            array.forEach(standonuser => {
+                if (standonuser.username !== user.username) {
+                    let liEl = document.createElement("li");
+                    liEl.innerText = standonuser.username;
+                    liEl.setAttribute("data-index", JSON.stringify(standonuser));
+                    liEl.addEventListener("click", () => {
+                        let opponent = JSON.parse(liEl.getAttribute("data-index"));
+                        socket.emit("selectedOpponent", opponent, user.username);
+                    });
+                    userList.appendChild(liEl);
+                }
+            });
+        });
+
+        // Handle incoming request
+        socket.on("requestedToConnect", (opponentSocketId, opponentUsername) => {
+            const requestBox = document.getElementById("requestShowerBox");
+            document.getElementById("requestText").innerText = `${opponentUsername} wants to play with you!`;
+            requestBox.classList.remove("hideRequest");
+
+            document.getElementById("connect").addEventListener("click", () => {
+                socket.emit("acceptRequest", opponentSocketId, opponentUsername, user.username);
+                requestBox.classList.add("hideRequest");
+            });
+
+            document.getElementById("reject").addEventListener("click", () => {
+                socket.emit("rejectRequest", opponentSocketId, opponentUsername, user.username);
+                requestBox.classList.add("hideRequest");
+            });
+        });
+
+        // Start game when request is accepted
+        socket.on("requestAccepted", (opponentSocketId, opponentUsername, room) => {
+            document.getElementById("listOfFreeUsers").innerHTML = "";
+            document.getElementById("messageBox").innerText = `You are playing against ${opponentUsername}`;
+            connectedOpponentSocket = opponentSocketId;
+            roomName = room;
+            isMyTurn = (turn === "X");
+        });
+
+        // Handle moves
+        document.querySelectorAll(".cell").forEach(cell => {
+            cell.addEventListener("click", (event) => {
+                if (!isMyTurn || event.target.innerText) return;
+                event.target.innerText = turn;
+                socket.emit("userPlayed", event.target.getAttribute("data-index"), turn, roomName);
+                isMyTurn = false;
+                checkWinner();
+            });
+        });
+
+        socket.on("opponentPlayed", (cellNo, newTurn) => {
+            document.querySelector(`.cell[data-index='${cellNo}']`).innerText = newTurn;
+            isMyTurn = true;
+            turn = newTurn;
+            checkWinner();
+        });
+
+        function checkWinner() {
+            const cells = [...document.getElementsByClassName("cell")].map(cell => cell.innerText);
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            for (let combo of winningCombinations) {
+                if (cells[combo[0]] && cells[combo[0]] === cells[combo[1]] && cells[combo[1]] === cells[combo[2]]) {
+                    socket.emit("won", roomName, user.username);
+                    return;
+                }
+            }
+        }
+
+        socket.on("opponentWon", (winner) => {
+            document.getElementById("messageBox").innerText = `${winner} wins! 🎉`;
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <style>
+        body{
+            display:flex;
+            flex-flow:row wrap;
+            height:100vh;
+            width:100vw;
+            align-items: center;
+            justify-content:center;
+            background:linear-gradient(rgb(39, 143, 166),rgb(28, 188, 169))
+        }
+        form{
+            display:flex;
+            flex-flow:column wrap;
+            border:2px solid black;
+            min-height:30%;
+            width:50%;
+            row-gap:10px;
+            align-items:center;
+            border-radius:10px;
+            background:linear-gradient(orange,red);
+            box-shadow:10px 10px 5px 0px white
+
+
+        }
+        input{
+            display:block;
+            height:20%;
+            width:90%;
+            box-sizing: border-box;
+
+
+        }
+        label{
+            align-self:flex-start;
+        }
+        button{
+            height:30px;
+            width:50%;
+            border-radius:25px;
+            color:azure;
+            background:linear-gradient(red,black);
+        }
+        button:hover{
+            background:linear-gradient(black,red);
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+    <!--<div>hello</div>-->
+    <form action="http://localhost:5000/login" method="post">
+        <label for="email">Email: </label>
+        <input type="text" id="email" name="email"/>
+        
+        <label for="password">Password: </label>
+        <input type="password" id="password" name="password">
+        <button type="submit">login</button>
+    </form>
+</body>
+</html>
