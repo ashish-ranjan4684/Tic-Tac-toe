@@ -1,0 +1,93 @@
+body{
+    height:100vh;
+    width:100vw;
+    display:flex;
+    flex-flow:column wrap;
+    align-items: center;
+    justify-content: center;
+    background-color:antiquewhite;
+
+}
+
+/*form{
+    width:100%;
+    height:100%
+    display:flex;
+
+}*/
+
+.messageBox{
+    width:300px;
+    height:200px;
+    position:relative;
+    background:linear-gradient(rgb(154, 238, 224),rgb(229, 237, 236));
+    
+    display:flex;
+    flex-flow:column wrap;
+    align-items:center;
+    justify-content: center;
+    border-radius:30px;
+    row-gap:10px;
+    z-index:500;
+    box-shadow: 1px,1px,10px,10px,rgb(154, 238, 224);
+    perspective: 100px;
+}
+
+.messageBox:hover{
+    width:350px;
+    height:220px;
+    /*transform:rotateZ(10deg);*/
+    transition-property:width,height;
+    transition-duration: 200ms;
+    transition-timing-function:ease-in;
+}
+
+button{
+    width:80%;
+    height:30px;
+    border-radius:20px;
+    cursor: pointer;
+    background:linear-gradient( rgb(192, 233, 138),rgb(222, 228, 210));
+}
+
+
+button:hover{
+    background-image:linear-gradient( rgb(140, 184, 83),rgb(222, 228, 210));
+}
+
+#ai{
+    width:40%;
+}
+
+h1{
+    position:absolute;
+    top:0;
+    background-image: linear-gradient(rgb(238, 35, 69),rgb(52, 21, 206));
+    background-clip:text;
+    color:transparent;
+}
+
+h1:hover{
+    transform:translateY(10px);
+    transition-property: transform;
+    transition-duration: 2s;
+}
+
+
+/*#name:hover{
+    display:inline-block;
+    /*transform:rotateZ(10deg);
+    transition-property: transform;
+    transition-duration: 2s;
+}*/
+
+img{
+    position:absolute;
+    top:0;
+    left:5px;
+}
+img:hover{
+    cursor:pointer;
+    display:inline-block;
+    transform:rotateZ(-10deg);
+}

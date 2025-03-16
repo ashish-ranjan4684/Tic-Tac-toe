@@ -7,7 +7,7 @@ body {
     height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-color: antiquewhite;
 }
 
 h1 {
@@ -99,4 +99,93 @@ button {
 .hideRequest{
     
     display:none;
+}
+
+#opponent{
+    position:absolute;
+    top:20px;
+    left:20px;
+    display:none;
+}
+
+#waitAnimation{
+    width:50px;
+    height:50px;
+    border:5px dotted black;
+    border-radius:50%;
+    position:absolute;
+    top:20px;
+    left:20px;
+    animation-name: rotate;
+    animation-duration:4s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes rotate {
+    from{
+        transform:rotateZ(0deg);
+    }
+    to{
+        transform:rotatez(360deg);
+    }
+    
+}
+
+#waitAnimation:hover{
+    /*transform:rotateZ(360deg);
+    transition-property: transform;
+    transition-duration: 36s;*/
+    /*animation-name: rotate;
+    animation-duration:2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;*/
+}
+
+#pick{
+    position:absolute;
+    top:0;
+    display:none;
+}
+
+#congrats{
+    position:absolute;
+    bottom:-100px;
+    display:none;
+    z-index:1000;
+}
+
+#weep{
+    position:absolute;
+    bottom:-100px;
+    display:none
+}
+
+@keyframes balloon_urao{
+    from{
+        /*display: none;*/
+        bottom:-100px;
+    }
+    to{
+        /*display:block;*/
+        bottom:100vh;
+
+    }
+}
+
+.animate{
+    display:block !important;
+    animation: balloon_urao 5s forwards;
+
+}
+
+#playagain{
+    border-radius:75px;
+}
+
+#playagain:hover{
+    box-shadow: 5px 5px 5px white;
+    background-color: aquamarine;
+    transition-property: box-shadow background-color;
+    transition-duration: 2s;
 }

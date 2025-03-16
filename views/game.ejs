@@ -9,8 +9,8 @@
 <body>
     <h1>Tic-Tac-Toe</h1>
     <div id="name">Hello! <%=user.name %>😊</div>
-    <ul id="listOfFreeUsers">
-    </ul>
+    <div id="opponent">Playing Against <%=opponentName %></div>
+    
     
     <div id="requestShowerBox" class="showRequest hideRequest">
         <div>user requested to connect</div>
@@ -36,13 +36,13 @@
     <div id="messageBox" class="hide"></div>
     <script src="/socket.io/socket.io.js"></script>
     <script >
-        const socket = io();
+    //    const socket = io();
 let connectedOpponentSocket;
 let roomName;
-let turn = "X";
+let turn = "X"
 const user = <%-JSON.stringify(user) %>;
 
-socket.emit("findFreeUsers",user.username);
+/*socket.emit("findFreeUsers",user.username);
 socket.on("foundFreeUser",array=>{
     array.forEach(standonuser=>{
         if(standonuser.username != user.username){
@@ -82,14 +82,14 @@ socket.on("requestedToConnect",(opponentSocketId,opponentUsername)=>{
 
 })
 
-socket.on
+//socket.on
 
-socket.on("opponentPlayed",(turn)=>{
+/*socket.on("opponentPlayed",(turn)=>{
 
 ;
 
 });
-
+*/
 
 
 let cells  = document.getElementsByClassName("cell");

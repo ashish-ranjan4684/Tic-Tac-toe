@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe</title>
+    <link rel="stylesheet" href="homepageStyle.css">
+</head>
+<body>
+
+    <h1><span id="greeting"></span>! <span id="name"><%=user.name %></span></h1>
+    <img src="icons8-arrow-pointing-left-100-2.png" width="50px">
+
+    <!--<div class="messageBox">-->
+
+        <form class="messageBox">
+        <button class="option" id="multiplayer" type="button">MULTIPLAYER</button>
+        <button class="option" id="ai" type="button" >AI</button>
+    </form>
+    <!--</div>-->
+
+    <script>
+        let greetingBox = document.getElementById("greeting");
+        document.get
+        let now = new Date();
+        let hours = now.getHours();
+        if(hours<11)greetingBox.innerText="Good Morning";
+        else if(hours<2) greetingBox.innerText="Good Noon";
+        else if(hours<5)greetingBox.innerText="Good Afternoon";
+        else greetingBox.innerText="Good Evening";
+
+        let buttons = document.getElementsByTagName("button");
+        let image = document.getElementsByTagName("img")[0];
+        image.addEventListener("click",(event)=>{
+            if(buttons[0].innerText==="Join Room"){
+                buttons[0].innerText = "MULTIPLAYER";
+                buttons[1].innerText = "AI";
+            }
+        })
+        /*for(let i=0;i<buttons.length;i++){
+            buttons[i].addEventListener("click",(event)=>{
+                let option = event.target.innerText;
+                let endPoint = new URL("http:localhost:5000/game");
+                endPoint.searchParams.set("option","ai");
+                let form = document.getElementsByTagName("form")[0];
+                form.setAttribute("action",endPoint.toString());
+                console.log(endPoint.toString());
+                form.setAttribute("method","get");
+                form.submit();
+            })
+        }*/
+        buttons[0].addEventListener("click",(event)=>{
+            if(event.target.innerText === "Join Room")
+            {
+                let room = prompt("Enter Room Name: ");
+                console.log(room);
+                //for(let i=0;i<1000000000000;i++);
+                if(room){
+                    let form = document.createElement("form");
+                    let input= document.createElement("input");
+                    input.setAttribute("name","room");
+                    input.setAttribute("value",room);
+                    form.appendChild(input);
+                    form.setAttribute("method", "post");
+                    form.setAttribute("action", `https://db52-36-255-16-56.ngrok-free.app/join`);
+                    document.body.appendChild(form);
+                    console.log(form.getAttribute("action"));
+                    form.submit();
+                    
+                }
+                
+
+            }else{
+                event.target.innerText = "Join Room";
+                buttons[1].innerText = "Create Room";
+            }
+        })
+        buttons[1].addEventListener("click",(event)=>{
+            let form = document.getElementsByTagName("form")[0];
+            if(event.target.innerText === "Create Room")
+            {
+                let randomRoomNumber = Math.ceil(Math.random()*10000)+document.getElementById("name").innerText;
+                console.log(randomRoomNumber);
+                let endPoint = new URL("https://db52-36-255-16-56.ngrok-free.app/game");
+                endPoint.searchParams.set("room",randomRoomNumber);
+                //let form = document.getElementsByTagName("form")[0];
+                form.setAttribute("action",endPoint.toString());
+                console.log(endPoint.toString());
+                form.setAttribute("method","post");
+                form.submit();
+            }
+            else{
+                let endPoint = new URL("https://db52-36-255-16-56.ngrok-free.app/game/ai");
+                form.setAttribute("action",endPoint.toString());
+                form.setAttribute("method","get");
+                form.submit();
+            }
+        })
+
+
+
+    </script>
+
+</body>
+</html>

@@ -7,7 +7,9 @@ const socketio = require("socket.io");
 const jwt = require("jsonwebtoken");
 const db = require("./database/user.json");
 const fs = require("fs");
+const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT;
+const secret = process.env.SECRET;
 console.log(PORT);
 
 const app = express();
@@ -16,95 +18,79 @@ const io = new socketio.Server(server);
 
 app.use(express.static(path.join(__dirname+"/favicon")));
 app.use(express.urlencoded({extended:true}));
-app.set("view engine","ejs")
+app.use(cookieParser());
+app.set("view engine","ejs");
 app.set("views","./views");
 
-let playingusers=[];
-let standonusers=[]
+let createdUnjoinedRooms = new Map();
+
+
 
 
 io.on("connect",(socket)=>{
-    console.log(`A new client connected with id = ${socket.id}`);
-    console.log(standonusers);
-    socket.on("findFreeUsers",(username)=>{
-        standonusers.push({socketid:socket.id,username:username});
-        if(standonusers){
-            socket.emit("foundFreeUser",standonusers);
-            standonusers.forEach(user=>{
-                io.to(user.socketid).emit("foundFreeUser",[standonusers[standonusers.length-1]]);
-            })
-        }
-        else{
-            socket.emit("NoFreeUserFound");
-        }
-    });
-    
-    
-    socket.on("selectedOpponent",(opponent,username)=>{
-        if(standonusers.includes(opponent))
-        {
-            io.to(opponent.socketid).emit("requestedToConnect",socket.id,username);
-            
-        }
-    });
 
-    /*socket.on("acceptRequest",(opponentSocketId,opponentUsername,sendersUsername)=>{
-        if(standonusers.includes({socketid:opponentSocketId,username:opponentUsername}))
-        {
-            io.to(opponentSocketId).emit("requestAccepted",socket.id,sendersUsername,opponentSocketId);
-            socket.join(opponentSocketId);
-            //aopponent.socket.join(opponent.username+username);
-            for(let i=0;i<standonusers.length;i++)
-            {
-                if(standonusers[i] == {socketid:opponentSocketId,username:opponentUsername} || standonusers[i] == {socketid:socket.id,username:sendersUsername})
-                {
-                    standonusers.splice(i,1);
-                    console.log(standonusers);
-                }
-            }
-        }
-    });
-
-    socket.on("userPlayed",(cellNo,turn,roomName)=>{
-        if(turn == "X")turn = "O";
-        else  turn = "X";
-
-        socket.to(roomName).emit("opponentPlayed",cellNo,turn,roomName);
-
-    });
-
-    socket.on("won",(roomName,username)=>{
-        socket.to(roomName).emit("opponentWon",username);
-    });*/
-
-    socket.on("acceptRequest", (opponentSocketId, opponentUsername, sendersUsername) => {
-        const room = `${opponentSocketId}-${socket.id}`;
-        io.to(opponentSocketId).emit("requestAccepted", socket.id, sendersUsername, room);
-        socket.emit("requestAccepted", opponentSocketId, opponentUsername, room);
+    socket.on("createRoom",(room,user)=>{
         socket.join(room);
-        io.sockets.sockets.get(opponentSocketId)?.join(room);
+        //createdUnjoinedRooms.set(room,[user]);
+        console.log("A room got created: ",room);
+        console.log(createdUnjoinedRooms);
     });
     
-    socket.on("userPlayed", (cellNo, turn, roomName) => {
-        const newTurn = (turn === "X") ? "O" : "X";
-        socket.to(roomName).emit("opponentPlayed", cellNo, newTurn);
-    });
     
-    socket.on("won", (roomName, username) => {
-        io.to(roomName).emit("opponentWon", username);
-    });
-    
+    socket.on("joinRoom",(room,userDetail)=>{
+        try{
+            console.log("joinRoom requested");
+            let payload = jwt.verify(userDetail,secret);
+            if(createdUnjoinedRooms.has(room)){
+                socket.join(room);
+                createdUnjoinedRooms.get(room).push(payload);
+                console.log(`${createdUnjoinedRooms.toString()} after joining`)
+                let paasaJoiner="";
+                let paasaCreator="";
+                let joinerTurn;
+                let creatorTurn;
+                let randomGoti = Math.random()*10;
+                let randomTurn = Math.random()*10;
+                if(randomGoti<=5)
+                {    
+                    paasaJoiner = "X";
+                    paasaCreator = "O";
+                }
+                else{
+                    paasaJoiner = "O";
+                    paasaCreator = "X";
+                }
+                if(randomTurn>5){
+                    joinerTurn = "true";
+                    creatorTurn="false";
+                }
+                else{
+                    joinerTurn="false";
+                    creatorTurn="true";
+                }
 
+                socket.emit("start game",joinerTurn,paasaJoiner,paasaCreator,JSON.stringify(createdUnjoinedRooms.get(room)[1]),JSON.stringify(createdUnjoinedRooms.get(room)[0]),room);
+                socket.to(room).emit("start game",creatorTurn,paasaCreator,paasaJoiner,JSON.stringify(createdUnjoinedRooms.get(room)[0]),JSON.stringify(createdUnjoinedRooms.get(room)[1]),room);
+            }
+        }catch(err){
+            socket.emit("not authorized");
+        }
+
+    });
+
+    socket.on("continueMatch",(index,room)=>{
+        socket.to(room).emit("continueMatch",index,room);
+    })
+
+    socket.on("youLoose",(room)=>{
+        socket.to(room).emit("youLoose",room);
+    })
+
+    socket.on("Match Drawn",(room)=>{
+        socket.to(room).emit("Match Drawn",room);
+    })
+    
 });
-
-io.on("disconnect",(socket)=>{
-    console.log(`${socket.id} got disconnected`);
-    /*socket.rooms.forEach(room=>{
-        socket.leave("room");
-        //io.to(room).emit("")
-    })*/
-
-})
 
 
 
@@ -124,7 +110,10 @@ app.post("/signup",(req,res)=>{
         }
         db.push(req.body);
         fs.writeFileSync(path.join(__dirname,"/database","user.json"),JSON.stringify(db));
-        return res.render("game1",{user:req.body});
+        let payload = {user:req.body};
+        let token = jwt.sign(payload,secret);
+        res.cookie("uid",token);
+        return res.render("homepage",{user:req.body});
     }catch(err){
         console.log("error");
         return res.statusCode("502").send("Internal Server Error");
@@ -140,7 +129,12 @@ app.post("/login",(req,res)=>{
     {
         if(db[i].email==user.email && db[i].password == user.password){
             console.log("found");
-            return res.render("game1",{user:db[i]});
+            let payload = {user:db[i]};
+            console.log(payload);
+            let token = jwt.sign(payload,secret);
+            console.log(token);
+            res.cookie("uid",token);
+            return res.render("homepage",{user:db[i]});
         }
     }
     
@@ -151,6 +145,44 @@ app.get("/login",(req,res)=>{
     res.sendFile(path.join(__dirname,"/frontend","/login.html"));
 })
 
+app.post("/join",(req,res)=>{
+
+    try{
+        let room = req.body.room;
+        console.log(room);
+        let token = req.cookies.uid;
+        let payload = jwt.verify(token,secret);
+        res.cookie("iRequsetedRoom","true");
+        res.cookie("iCreatedRoom","false")
+        res.cookie("room",room);
+        res.cookie("uid",token);
+        res.render("multiplayerGame",{payload});
+    }catch(err)
+    {
+        console.log("error: ",err);
+    }
+})
+
+app.post("/game",(req,res)=>{
+    try{
+        let room =req.query.room;
+        console.log(req);
+        console.log(req.cookies.room);
+        let token = req.cookies.uid;
+        let payload = jwt.verify(token,secret);
+        console.log(payload);
+        createdUnjoinedRooms.set(room,[payload]);
+        res.cookie("room",room);
+        res.cookie("iCreatedRoom","true");
+        res.cookie("iRequsetedRoom","false");
+        res.cookie("uid",JSON.stringify(payload));
+        res.render("multiplayerGame",{payload})
+    }catch(error){
+        console.log("error: ",error);
+    }
+
+        
+})
 
 
 server.listen(PORT,()=>{
